@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Lavare</title>
+  <subtitle>iOS Developer</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://yangcaimu.github.io/"/>
+  <updated>2016-05-14T10:05:35.000Z</updated>
+  <id>http://yangcaimu.github.io/</id>
+  
+  <author>
+    <name>Lavare</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Windows 使用技巧</title>
+    <link href="http://yangcaimu.github.io/2014/05/25/windowshiyongjiqiao/"/>
+    <id>http://yangcaimu.github.io/2014/05/25/windowshiyongjiqiao/</id>
+    <published>2014-05-25T15:07:16.000Z</published>
+    <updated>2016-05-14T10:05:35.000Z</updated>
+    
+    <content type="html">&lt;p&gt;介于正式使用&lt;code&gt;RMBP&lt;/code&gt;,以后应该没多少机会使用&lt;code&gt;Window&lt;/code&gt;,在此记录下之前使用&lt;code&gt;Window&lt;/code&gt;的一些心得,还有纪念下陪伴我大学生活的&lt;code&gt;Acer 4752G&lt;/code&gt;本本。&lt;/p&gt;
+&lt;p&gt;记得在大一暑假的某一天,冥冥之中闲逛到&lt;code&gt;X-Force&lt;/code&gt;的&lt;a href=&quot;http://www.iplaysoft.com/&quot;&gt;异次元软件世界&lt;/a&gt;,在&lt;code&gt;本年热门&lt;/code&gt;Tag看到一篇文章&lt;a href=&quot;http://www.iplaysoft.com/build-effective-working-environment-1.html&quot;&gt;《让电脑更高效的魔法 - 浅谈高效率PC工作环境的简化、净化与建立方法 (上)》&lt;/a&gt;、&lt;a href=&quot;http://www.iplaysoft.com/build-effective-working-environment-2.html&quot;&gt;《让电脑更高效的魔法 – 浅谈高效率PC工作环境的简化、净化与建立方法 (下)》&lt;/a&gt;,于是乎无聊没事做，就去效仿了下。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;高效&lt;/code&gt;、&lt;code&gt;Geek&lt;/code&gt;、&lt;code&gt;神器&lt;/code&gt;、&lt;code&gt;Auto Hot Key&lt;/code&gt;、&lt;code&gt;Vim&lt;/code&gt;、&lt;code&gt;Total Commander&lt;/code&gt;、&lt;code&gt;Evernote&lt;/code&gt;,渐渐的开拓了我菜鸟的视野。(那时还不知道有Mac这个东东的存在)&lt;/p&gt;
+&lt;h1 id=&quot;主要原则&quot;&gt;&lt;a href=&quot;#主要原则&quot; class=&quot;headerlink&quot; title=&quot;主要原则&quot;&gt;&lt;/a&gt;主要原则&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;在更短时间里，完成你要做的事&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;开机启动-尽量少启动项&quot;&gt;&lt;a href=&quot;#开机启动-尽量少启动项&quot; class=&quot;headerlink&quot; title=&quot;开机启动(尽量少启动项)&quot;&gt;&lt;/a&gt;开机启动(尽量少启动项)&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;管理开机启动项可以用系统的&lt;code&gt;msconfig&lt;/code&gt;或者&lt;code&gt;360软件管理&lt;/code&gt;(介于&lt;code&gt;360安全卫士&lt;/code&gt;只有这个功能有点用处，强大的网友专门提取了这个功能作为一个&lt;code&gt;.exe&lt;/code&gt;文件)&lt;/li&gt;
+&lt;li&gt;杀毒软件(&lt;code&gt;Windows Security Essential&lt;/code&gt;或者裸机)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Auto Hot Key&lt;/code&gt;的脚本&lt;/li&gt;
+&lt;li&gt;一些小的辅助应用,不影响开机速度(eg:&lt;code&gt;Flux&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;有些大的软件真的要开机启动的话,可以用&lt;code&gt;Auto Hot Key&lt;/code&gt;编写延迟启动的脚本&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;Auto-Hot-Key的使用-尽量用快捷键启动软件&quot;&gt;&lt;a href=&quot;#Auto-Hot-Key的使用-尽量用快捷键启动软件&quot; class=&quot;headerlink&quot; title=&quot;Auto Hot Key的使用(尽量用快捷键启动软件)&quot;&gt;&lt;/a&gt;&lt;code&gt;Auto Hot Key&lt;/code&gt;的使用(尽量用快捷键启动软件)&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;常用软件通过编写&lt;code&gt;Auto Hot Key&lt;/code&gt;脚本可以快捷键启动&lt;/li&gt;
+&lt;li&gt;其余的软件统一快捷方式放在同一个文件夹里,并编写脚本快捷键打开该文件夹&lt;/li&gt;
+&lt;li&gt;编写一个全局开关,负责打开与关闭&lt;code&gt;Auto Hot Key&lt;/code&gt;的热键设置(eg:&lt;code&gt;F10::suspend&lt;/code&gt;,通过&lt;code&gt;F10&lt;/code&gt;作为开关)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;我自己的Auto-Hot-Key脚本&quot;&gt;&lt;a href=&quot;#我自己的Auto-Hot-Key脚本&quot; class=&quot;headerlink&quot; title=&quot;我自己的Auto Hot Key脚本&quot;&gt;&lt;/a&gt;我自己的&lt;code&gt;Auto Hot Key&lt;/code&gt;脚本&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;!&lt;/code&gt; -&amp;gt; &lt;code&gt;Alt&lt;/code&gt;按键 ,&lt;code&gt;^&lt;/code&gt; -&amp;gt; &lt;code&gt;Ctrl&lt;/code&gt;按键&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;!x&lt;/code&gt; -&amp;gt; &lt;code&gt;Alt&lt;/code&gt; + &lt;code&gt;X&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;script src=&quot;https://gist.github.com/yangcaimu/94378a8a00563caa5cbf77a13a89a6ed.js&quot;&gt;&lt;/script&gt;
+
+&lt;h2 id=&quot;软件&quot;&gt;&lt;a href=&quot;#软件&quot; class=&quot;headerlink&quot; title=&quot;软件&quot;&gt;&lt;/a&gt;软件&lt;/h2&gt;&lt;h3 id=&quot;搜索工具&quot;&gt;&lt;a href=&quot;#搜索工具&quot; class=&quot;headerlink&quot; title=&quot;搜索工具&quot;&gt;&lt;/a&gt;搜索工具&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Everything&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/qianlifeng/Wox&quot;&gt;Wox&lt;/a&gt;(类似&lt;code&gt;Mac&lt;/code&gt;下&lt;code&gt;Alfred&lt;/code&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;文件管理器&quot;&gt;&lt;a href=&quot;#文件管理器&quot; class=&quot;headerlink&quot; title=&quot;文件管理器&quot;&gt;&lt;/a&gt;文件管理器&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Total Commander&lt;/li&gt;
+&lt;li&gt;Clover&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;垃圾清理&quot;&gt;&lt;a href=&quot;#垃圾清理&quot; class=&quot;headerlink&quot; title=&quot;垃圾清理&quot;&gt;&lt;/a&gt;垃圾清理&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;CCleaner&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;影音&quot;&gt;&lt;a href=&quot;#影音&quot; class=&quot;headerlink&quot; title=&quot;影音&quot;&gt;&lt;/a&gt;影音&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;射手播放器&lt;/li&gt;
+&lt;li&gt;Kmplayer Plus&lt;/li&gt;
+&lt;li&gt;网易云音乐&lt;/li&gt;
+&lt;li&gt;DoubanFM&lt;/li&gt;
+&lt;li&gt;Foobar&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;云存储&quot;&gt;&lt;a href=&quot;#云存储&quot; class=&quot;headerlink&quot; title=&quot;云存储&quot;&gt;&lt;/a&gt;云存储&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Dropbox&lt;/li&gt;
+&lt;li&gt;百度云&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;知识储备&quot;&gt;&lt;a href=&quot;#知识储备&quot; class=&quot;headerlink&quot; title=&quot;知识储备&quot;&gt;&lt;/a&gt;知识储备&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Evernote&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;文库下载&quot;&gt;&lt;a href=&quot;#文库下载&quot; class=&quot;headerlink&quot; title=&quot;文库下载&quot;&gt;&lt;/a&gt;文库下载&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;DocDown&lt;/li&gt;
+&lt;li&gt;iDocDown&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;其他&quot;&gt;&lt;a href=&quot;#其他&quot; class=&quot;headerlink&quot; title=&quot;其他&quot;&gt;&lt;/a&gt;其他&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Connectify Hotspot(笔记本作为wifi热点)&lt;/li&gt;
+&lt;li&gt;DiskGenius(查看硬盘状态、格盘、硬盘启动项)&lt;/li&gt;
+&lt;li&gt;EasyBCD(双系统要用到)&lt;/li&gt;
+&lt;li&gt;Flux(色温屏保)&lt;/li&gt;
+&lt;li&gt;office Tab center (让office支持Tag)&lt;/li&gt;
+&lt;li&gt;P2P终结者&lt;/li&gt;
+&lt;li&gt;start unlocker(不会出现&lt;code&gt;该文件正在使用，删不了&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;teamViewer(远程协同)&lt;/li&gt;
+&lt;li&gt;Ulead gif animator(gif制作工具)&lt;/li&gt;
+&lt;li&gt;UltraISO(制作、读取ISO镜像)&lt;/li&gt;
+&lt;li&gt;VMware Workstation(虚拟机)&lt;/li&gt;
+&lt;li&gt;Windows hotkey explorer(查看当前系统热键)&lt;/li&gt;
+&lt;li&gt;FSCapture(截图工具)&lt;/li&gt;
+&lt;li&gt;TeraCopy(复制粘贴,可暂停,速度更快)&lt;/li&gt;
+&lt;li&gt;ADsafe(广告拦截)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;小工具&quot;&gt;&lt;a href=&quot;#小工具&quot; class=&quot;headerlink&quot; title=&quot;小工具&quot;&gt;&lt;/a&gt;小工具&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Hide Taskbar(隐藏任务栏)&lt;/li&gt;
+&lt;li&gt;HideDesktopIcons(隐藏桌面图标)&lt;/li&gt;
+&lt;li&gt;offandlock(锁定电脑)&lt;/li&gt;
+&lt;li&gt;turn off LCD(关闭屏幕)&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;介于正式使用&lt;code&gt;RMBP&lt;/code&gt;,以后应该没多少机会使用&lt;code&gt;Window&lt;/code&gt;,在此记录下之前使用&lt;code&gt;Window&lt;/code&gt;的一些心得,还有纪念下陪伴我大学生活的&lt;code&gt;Acer 4752G&lt;/code&gt;本本。&lt;/p&gt;
+&lt;p&gt;记
+    
+    </summary>
+    
+    
+      <category term="Skills" scheme="http://yangcaimu.github.io/tags/Skills/"/>
+    
+      <category term="Windows" scheme="http://yangcaimu.github.io/tags/Windows/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Mac 使用技巧</title>
+    <link href="http://yangcaimu.github.io/2014/05/24/macshiyongjiqiao/"/>
+    <id>http://yangcaimu.github.io/2014/05/24/macshiyongjiqiao/</id>
+    <published>2014-05-24T06:44:51.000Z</published>
+    <updated>2016-05-14T10:03:54.000Z</updated>
+    
+    <content type="html">&lt;p&gt;通过使用 Mac 提高生产效率，不止是在工作上，在日常生活上也有必要提高效率，本文先从快捷键、触摸板、工具、小技巧几点切入。&lt;/p&gt;
+&lt;h1 id=&quot;Shortcuts&quot;&gt;&lt;a href=&quot;#Shortcuts&quot; class=&quot;headerlink&quot; title=&quot;Shortcuts&quot;&gt;&lt;/a&gt;Shortcuts&lt;/h1&gt;&lt;h3 id=&quot;官方手册&quot;&gt;&lt;a href=&quot;#官方手册&quot; class=&quot;headerlink&quot; title=&quot;官方手册&quot;&gt;&lt;/a&gt;官方手册&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;http://support.apple.com/kb/HT1343?viewlocale=zh_CN&quot;&gt;系统快捷键&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;常用的快捷键&quot;&gt;&lt;a href=&quot;#常用的快捷键&quot; class=&quot;headerlink&quot; title=&quot;常用的快捷键&quot;&gt;&lt;/a&gt;常用的快捷键&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;基本的都可以在&lt;code&gt;System Preferences - Keyboard - Shortcuts&lt;/code&gt;里找到，或者在软件的&lt;code&gt;Preferences&lt;/code&gt;里也可以找到&lt;/li&gt;
+&lt;li&gt;一般的基础快捷键有：&lt;/li&gt;
+&lt;li&gt;截图、复制与粘贴、窗口切换、打开与关闭应用程序、切换 Space、放大与缩小界面操作……（详细可参考官方文档）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&quot;其他快捷键&quot;&gt;&lt;a href=&quot;#其他快捷键&quot; class=&quot;headerlink&quot; title=&quot;其他快捷键&quot;&gt;&lt;/a&gt;其他快捷键&lt;/h4&gt;&lt;p&gt; &lt;code&gt;文本操作&lt;/code&gt;(强烈推荐使用，效率大大提升)&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;OS X 下所有输入区都支持 readline 的快捷键，熟悉后可以大大提升率&lt;/li&gt;
+&lt;li&gt;Control + A -&amp;gt; 跳到行首&lt;/li&gt;
+&lt;li&gt;Control + E -&amp;gt; 跳到行尾&lt;/li&gt;
+&lt;li&gt;Option + Left/Right -&amp;gt; 左/右移动一个单词位&lt;/li&gt;
+&lt;li&gt;Option + Delete -&amp;gt; 删除一个单词&lt;/li&gt;
+&lt;li&gt;Command + Delete -&amp;gt; 删除到行首&lt;/li&gt;
+&lt;li&gt;Control + K -&amp;gt; 删除到行尾&lt;/li&gt;
+&lt;li&gt;Option大多与单词操作相关，Control与段落相关&lt;/li&gt;
+&lt;li&gt;Command + 鼠标 -&amp;gt; 选中不同位置的文本内容&lt;/li&gt;
+&lt;li&gt;Option + 鼠标 -&amp;gt; 对文本进行块选&lt;/li&gt;
+&lt;li&gt;Option + Shift + Command + V -&amp;gt; 无格式粘贴&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;杂&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;Command + , -&amp;gt;打开偏好设置&lt;/li&gt;
+&lt;li&gt;Shift + Command + / -&amp;gt; 打开程序里的全局搜索菜单&lt;/li&gt;
+&lt;li&gt;Shift + Command + Y -&amp;gt; 快速创建便笺&lt;/li&gt;
+&lt;li&gt;Control + F2 -&amp;gt; 控制menu bar&lt;/li&gt;
+&lt;li&gt;Control + F3 -&amp;gt; 控制Dock&lt;/li&gt;
+&lt;li&gt;神奇的Option键 -&amp;gt; 没事就按按Option键&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&quot;终端快捷键&quot;&gt;&lt;a href=&quot;#终端快捷键&quot; class=&quot;headerlink&quot; title=&quot;终端快捷键&quot;&gt;&lt;/a&gt;终端快捷键&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;清屏：Command + K&lt;/li&gt;
+&lt;li&gt;向左/向右切换标签： Command + Shift + { 或 }&lt;/li&gt;
+&lt;li&gt;Control + a / e    回到命令行头/尾&lt;/li&gt;
+&lt;li&gt;Option + b / f     向前/后跳一个单词&lt;/li&gt;
+&lt;li&gt;Control +u /k    删除光标前/后 所有单词&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&quot;iTerm2&quot;&gt;&lt;a href=&quot;#iTerm2&quot; class=&quot;headerlink&quot; title=&quot;iTerm2&quot;&gt;&lt;/a&gt;iTerm2&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;分窗口操作：Shift + Command+d（横向）Command + d（竖向）&lt;/li&gt;
+&lt;li&gt;查找和粘贴：Command + f，呼出查找功能，tab 键选中找到的文本，Option + enter - 粘贴&lt;/li&gt;
+&lt;li&gt;自动完成：Command + 根据上下文呼出自动完成窗口，上下键选择&lt;/li&gt;
+&lt;li&gt;粘贴历史：Shift + Command + h&lt;/li&gt;
+&lt;li&gt;回放功能：Option + Command + b&lt;/li&gt;
+&lt;li&gt;全屏：Command + Enter&lt;/li&gt;
+&lt;li&gt;光标去哪了？ Command + /&lt;/li&gt;
+&lt;li&gt;Expose Tabs：Option + Command + e&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;更多快捷键&quot;&gt;&lt;a href=&quot;#更多快捷键&quot; class=&quot;headerlink&quot; title=&quot;更多快捷键&quot;&gt;&lt;/a&gt;更多快捷键&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;可在&lt;code&gt;System Preferences-Keyboard-Shortcuts&lt;/code&gt;自定义&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&quot;Trackpad&quot;&gt;&lt;a href=&quot;#Trackpad&quot; class=&quot;headerlink&quot; title=&quot;Trackpad&quot;&gt;&lt;/a&gt;Trackpad&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;http://support.apple.com/kb/ht4721?viewlocale=zh_CN&quot;&gt;Mac 基础知识：Multi-Touch 手势&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&quot;Tools&quot;&gt;&lt;a href=&quot;#Tools&quot; class=&quot;headerlink&quot; title=&quot;Tools&quot;&gt;&lt;/a&gt;Tools&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;hzlzh的 &lt;a href=&quot;https://github.com/hzlzh/Best-App&quot;&gt;Best-App&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Alfred（神器）&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Workflows:workflows Searcher…&lt;/li&gt;
+&lt;li&gt;自定义搜索规则&lt;/li&gt;
+&lt;li&gt;Force Keyboard:US&lt;/li&gt;
+&lt;li&gt;相关链接&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;http://alfredthe.me/&quot;&gt;Alfred Themes&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hzlzh/AlfredWorkflow.com&quot;&gt;Workflow&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/hzlzh/AlfredWorkflow.com&quot;&gt;Workflow for github&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://www.zhihu.com/question/20656680&quot;&gt;借助 Alfred 2.0 的 Workflows 功能可以做哪些好玩的事情&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Mou、LightPaper （Markdown编辑器）&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;Homebrew （命令行安装软件，支持批量安装）&lt;/li&gt;
+&lt;li&gt;百度输入法（安静模式）&lt;/li&gt;
+&lt;li&gt;Bartender(菜单图标管理)&lt;/li&gt;
+&lt;li&gt;oh-my-zsh + iTerm2 （Shell、终端）&lt;/li&gt;
+&lt;li&gt;F.lux(色温调节屏幕亮度)&lt;/li&gt;
+&lt;li&gt;Keyboard Maestro （自动化流程的简化工具）&lt;/li&gt;
+&lt;li&gt;jitouch （自定义触摸板手势）&lt;/li&gt;
+&lt;li&gt;Go2Shell (目录–&amp;gt;终端)&lt;/li&gt;
+&lt;li&gt;……&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&quot;Command-Line-Interface&quot;&gt;&lt;a href=&quot;#Command-Line-Interface&quot; class=&quot;headerlink&quot; title=&quot;Command Line Interface&quot;&gt;&lt;/a&gt;Command Line Interface&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;a href=&quot;http://www.cocoachina.com/applenews/devnews/2014/0519/8466.html&quot;&gt;每个Mac OS X 命令行用户应当知道的终端工具&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;  ex:&lt;code&gt;open .&lt;/code&gt;(终端–&amp;gt;目录)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;lsof&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在倾倒废纸篓的时候，经常会提示该文件还在使用，不能删除，但是又不知道哪个程序在用，怎么办？Unix下有一个命令叫做lsof，名字是list open files的缩写，顾名思义，就是查看打开的文件，在终端里输入lsof 文件名，就可以找到打开这个文件的程序。关掉程序，就可以正常删除文件了。当然lsof还有很多丰富的指令，感兴趣的童靴自行Google吧。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&quot;Skills&quot;&gt;&lt;a href=&quot;#Skills&quot; class=&quot;headerlink&quot; title=&quot;Skills&quot;&gt;&lt;/a&gt;Skills&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Skills有很多是从&lt;a href=&quot;http://item.jd.com/11398297.html&quot;&gt;《MacTalk·人生元编程》&lt;/a&gt;里摘抄的，主要摘抄了些要记的，不懂的，或者经常要用到，归档在一起，方便以后查阅。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;去除右键菜单的重复项&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;OS X 系统有个问题，某个程序反复安装后，选中某种类型的文件，点右键-打开方式，你会看到不少重复的选项，我们可以用以下命令去除重复项。&lt;/p&gt;
+&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister -kill -r -domain &lt;span class=&quot;built_in&quot;&gt;local&lt;/span&gt; -domain system -domain user&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;旋转Mac的屏幕&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;打开系统选项设置，已经打开了的，退出重新打开。按住option+command键盘，点击显示器，在原来的亮度选项下方会出现一个旋转的选项，这时候你就可以旋转你的屏幕了。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;在Mac上看视频发热问题&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;http://zythum.sinaapp.com/youkuhtml5playerbookmark/&quot;&gt;妈妈再也不用担心我的macbook发烫了计划2.0Beta&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Dock的文件夹&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;（开启隐藏的列表功能）Dock文件夹有一个隐藏的列表功能，可以在命令行输入如下命令开启，另外，在列表和网格模式，还可以通过command +/-来放大和缩小图标，&lt;/p&gt;
+&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;defaults write com.apple.dock use-new-list-stack -bool TRUE; killall Dock&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code&gt;- 当我们打开Dock文件夹后，先打开某个文件所在文件夹时，按住command，点击该文件，就会打开Finder文件夹，并选中你刚才点击的文件。
+&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;AirDrop的有线传输&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Airdrop默认只能通过WIFI来传文件，如果电脑已经连了网线，但是没开WIFI就不能用AirDrop了，有一个办法可以打开AirDrop通过有线传文件的特征。打开终端输入：&lt;/p&gt;
+&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;defaults write com.apple.NetworkBrowser BrowseAllInterfaces 1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;然后选中Dock栏的Finder，按住option键右键点击Finder图标，点击底部菜单项“重新开启”，Finder重启之后，即使你的电脑没开WIFI，也可以用AirDrop给别人分享传文件了。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;词典发音(Option + Esc 让 Mac 把你选中的单词读出来)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;http://myblogimage.qiniudn.com/illustration%5C%E8%8F%9C%E9%B8%9F%E7%BA%A7Mac%E9%85%8D%E7%BD%AE%5CScreen%20Shot%202014-02-26%20at%206.50.04%20PM.png&quot; alt=&quot;Speak&quot;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;http://blog.sina.com.cn/s/blog_59fb90df01019vod.html&quot;&gt;通过快捷键快速显示、隐藏文件方法&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;在OS X上建立共享Wifi热点&lt;/li&gt;
+&lt;li&gt;上App Store下软件切换DNS（&lt;a href=&quot;http://dns.v2ex.com/&quot;&gt;V2EX&lt;/a&gt;,搭配Alfred的DNS切换workflows更佳）&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;切换Space&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Ctrl+数字切换到指定的Space（在&lt;code&gt;System Preferences&lt;/code&gt;-&lt;code&gt;Keyboard&lt;/code&gt;-&lt;code&gt;Shortcuts&lt;/code&gt;-&lt;code&gt;Mission Control&lt;/code&gt;里设置）&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;四指双击在最近使用的两个Space间切换,在终端输入以下命令&lt;/p&gt;
+&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;#功能开启&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;defaults write com.apple.dock double-tap-jump-back -bool TRUE;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;#重启Dock&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;killall Dock;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&quot;推荐书籍&quot;&gt;&lt;a href=&quot;#推荐书籍&quot; class=&quot;headerlink&quot; title=&quot;推荐书籍&quot;&gt;&lt;/a&gt;推荐书籍&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;http://item.jd.com/11398297.html&quot;&gt;《MacTalk·人生元编程》&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://ibuick.com/products/OSX_masters_Mavericks/index.html&quot;&gt;《OS X 高手进阶 – Mavericks》&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&quot;参考&quot;&gt;&lt;a href=&quot;#参考&quot; class=&quot;headerlink&quot; title=&quot;参考&quot;&gt;&lt;/a&gt;参考&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;http://jianshu.io/p/cfc0d49f2e8f&quot;&gt;我用Mac的这一年 - SenVe&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://jianshu.io/p/3a66d02c461f&quot;&gt;菜鸟级 Mac 配置（一） - GeekPlux&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://jianshu.io/p/dee28486b465&quot;&gt;菜鸟级 Mac 配置（二） - GeekPlux&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://miao.hu/2012/11/20/osx-shortcuts/&quot;&gt;OS X 下常用快捷键 - 紅一葉&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://miao.hu/2012/02/26/osx-exp-share/&quot;&gt;Mac 软件和学习经验分享 - 紅一葉&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://wonderffee.github.io/blog/2013/10/07/some-macos-tips/&quot;&gt;一些MacOS技巧 - Wonderffee’s Blog&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;通过使用 Mac 提高生产效率，不止是在工作上，在日常生活上也有必要提高效率，本文先从快捷键、触摸板、工具、小技巧几点切入。&lt;/p&gt;
+&lt;h1 id=&quot;Shortcuts&quot;&gt;&lt;a href=&quot;#Shortcuts&quot; class=&quot;headerlink&quot; title=&quot;Shor
+    
+    </summary>
+    
+    
+      <category term="Mac" scheme="http://yangcaimu.github.io/tags/Mac/"/>
+    
+      <category term="Skills" scheme="http://yangcaimu.github.io/tags/Skills/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>搭建 Blog 之旅</title>
+    <link href="http://yangcaimu.github.io/2014/04/25/dajianblogzhilu/"/>
+    <id>http://yangcaimu.github.io/2014/04/25/dajianblogzhilu/</id>
+    <published>2014-04-25T05:38:00.000Z</published>
+    <updated>2016-05-14T09:56:01.000Z</updated>
+    
+    <content type="html">&lt;h4 id=&quot;更新-2016-05-14-博客已从-Octopress-迁移至-Hexo&quot;&gt;&lt;a href=&quot;#更新-2016-05-14-博客已从-Octopress-迁移至-Hexo&quot; class=&quot;headerlink&quot; title=&quot;更新: 2016.05.14 - 博客已从 Octopress 迁移至 Hexo&quot;&gt;&lt;/a&gt;更新: 2016.05.14 - 博客已从 Octopress 迁移至 Hexo&lt;/h4&gt;&lt;p&gt;终于在业余时间捣鼓好了博客，之前就一直有想搭博客，可是一直耽误了，这次采用 &lt;a href=&quot;https://github.com/imathis/octopress&quot;&gt;Octopress&lt;/a&gt; 博客引擎，主题用的是 &lt;a href=&quot;https://github.com/shashankmehta/greyshade&quot;&gt;greyshade&lt;/a&gt;，当然还有其他主题，可以在 &lt;a href=&quot;https://github.com/imathis/octopress/wiki&quot;&gt;Octopress Wiki&lt;/a&gt; 查看。搭了博客才知道，&lt;code&gt;Octopress&lt;/code&gt;真的是给&lt;code&gt;爱折腾的人&lt;/code&gt;玩的东西啊，在搭建的过程中不断的有新问题出现，要不断折腾才行T_T，终于有了以下功能了，还有相关参考链接。&lt;/p&gt;
+&lt;h2 id=&quot;发表并部署博文&quot;&gt;&lt;a href=&quot;#发表并部署博文&quot; class=&quot;headerlink&quot; title=&quot;发表并部署博文&quot;&gt;&lt;/a&gt;发表并部署博文&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;因为老是忘记，所以发在这方便查阅&lt;/li&gt;
+&lt;/ul&gt;
+&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;rake new_post[&lt;span class=&quot;string&quot;&gt;&quot;New Post&quot;&lt;/span&gt;]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;rake generate&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;git add .&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;git commit -am &lt;span class=&quot;string&quot;&gt;&quot;Some comment here.&quot;&lt;/span&gt; &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;git push origin &lt;span class=&quot;built_in&quot;&gt;source&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;rake deploy&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h2 id=&quot;功能&quot;&gt;&lt;a href=&quot;#功能&quot; class=&quot;headerlink&quot; title=&quot;功能&quot;&gt;&lt;/a&gt;功能&lt;/h2&gt;&lt;h3 id=&quot;已完成&quot;&gt;&lt;a href=&quot;#已完成&quot; class=&quot;headerlink&quot; title=&quot;已完成&quot;&gt;&lt;/a&gt;已完成&lt;/h3&gt;&lt;p&gt;1.多说评论&lt;/p&gt;
+&lt;p&gt;2.加网分享&lt;/p&gt;
+&lt;p&gt;3.添加新浪微博支持&lt;/p&gt;
+&lt;p&gt;4.添加About页面&lt;/p&gt;
+&lt;p&gt;5.心愿墙&lt;/p&gt;
+&lt;p&gt;6.添加公益404&lt;/p&gt;
+&lt;p&gt;7.为博文添加原文链接及声明&lt;/p&gt;
+&lt;p&gt;8.添加Instagram支持&lt;/p&gt;
+&lt;p&gt;9.添加tag支持&lt;/p&gt;
+&lt;p&gt;10.列表的排版&lt;/p&gt;
+&lt;p&gt;11.添加Flickr图床&lt;/p&gt;
+&lt;p&gt;12.about页面&lt;/p&gt;
+&lt;p&gt;13.添加google analytics和百度统计&lt;/p&gt;
+&lt;h3 id=&quot;待测试&quot;&gt;&lt;a href=&quot;#待测试&quot; class=&quot;headerlink&quot; title=&quot;待测试&quot;&gt;&lt;/a&gt;待测试&lt;/h3&gt;&lt;h3 id=&quot;待做&quot;&gt;&lt;a href=&quot;#待做&quot; class=&quot;headerlink&quot; title=&quot;待做&quot;&gt;&lt;/a&gt;待做&lt;/h3&gt;&lt;p&gt;1.图片fancybox效果&lt;br&gt;2.嵌入代码显示行数(这个搞了好久，不知道是Markdown渲染引擎还是哪里出问题) &lt;/p&gt;
+&lt;h2 id=&quot;遇到的部分坑&quot;&gt;&lt;a href=&quot;#遇到的部分坑&quot; class=&quot;headerlink&quot; title=&quot;遇到的部分坑&quot;&gt;&lt;/a&gt;遇到的部分坑&lt;/h2&gt;&lt;h3 id=&quot;切换到ZSH后的配置&quot;&gt;&lt;a href=&quot;#切换到ZSH后的配置&quot; class=&quot;headerlink&quot; title=&quot;切换到ZSH后的配置&quot;&gt;&lt;/a&gt;切换到&lt;code&gt;ZSH&lt;/code&gt;后的配置&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;http://agiledon.github.io/blog/2012/12/25/octopress-issues-solution-and-tips/&quot;&gt;Octopress博客问题解决方案与技巧 - 简单文本&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://www.cnblogs.com/huang0925/p/3631916.html&quot;&gt;切换到ZSH以后遇到的坑 - 无敌北瓜&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;参考&quot;&gt;&lt;a href=&quot;#参考&quot; class=&quot;headerlink&quot; title=&quot;参考&quot;&gt;&lt;/a&gt;参考&lt;/h2&gt;&lt;p&gt;0.Octopress&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;http://812lcl.com/blog/2013/10/25/octopressbo-ke-da-jian-ji-mu-lu-jie-gou/&quot;&gt;Octopress博客搭建及目录结构 - 812lcl的博客&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;1.入门搭建&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;a href=&quot;http://beyondvincent.com/2013/08/03/2013-08-03-108-creating-a-github-blog-using-octopress/&quot;&gt;利用Octopress搭建一个Github博客 - 破船之家&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a href=&quot;http://blog.devtang.com/blog/2012/02/10/setup-blog-based-on-github/&quot;&gt;象写程序一样写博客：搭建基于github的博客 - 唐巧的技术博客&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;2.博客定制&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;a href=&quot;http://812lcl.com/blog/2013/10/26/octopressce-bian-lan-ji-ping-lun-xi-tong-ding-zhi/&quot;&gt;Octopress侧边栏及评论系统定制 - 812lcl的博客&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a href=&quot;http://biaobiaoqi.me/blog/2013/07/10/decorate-octopress/&quot;&gt;定制Octopress - Biaobiaoqi的博客&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a href=&quot;http://ginsmile.github.io/blog/2013/08/28/bo-ke-pei-zhi/#.U4RySZSSxN2&quot;&gt;Octopress博客配置 - John Xu’s Blog&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a href=&quot;http://beyondvincent.com/2013/07/27/2013-07-27-107-hello-page-of-github/&quot;&gt;你好！github页面 - 破船之家&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;增加Weibo、Instagram支持&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;a href=&quot;http://qxxqxx.com/blog/greyshade-qiuyin/&quot;&gt;为Octopress的Greyshade主题增加新浪微博,Instagram和Dribbble - 我系蚯蚓啊’s Blog&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a href=&quot;http://imallen.com/blog/2013/05/12/add-support-for-weibo-and-dribbble-to-greyshade.html&quot;&gt;为 Octopress 的 Greyshade 主题增加新浪微博和 Dribbble 的支持 - I’m Allen&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;用Flickr做图床&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;a href=&quot;http://colors4.us/blog/2012/11/10/photostream-in-octopress/&quot;&gt;在octopress上引入相片流 - sourrabbit &amp;amp; linpx&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a href=&quot;http://smarterhjw.com/blog/2013/10/21/integrate-octopress-with-flickr/&quot;&gt;在octopress中展示Flickr照片和相册 - Smarterhjw’s Blog&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;a href=&quot;http://xixitalk.github.io/blog/2013/06/19/Insert-a-Image-From-Flickr-in-Octopress/&quot;&gt;octopress里插入flickr的图片 - xixitalk’s snippet&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h4 id=&quot;更新-2016-05-14-博客已从-Octopress-迁移至-Hexo&quot;&gt;&lt;a href=&quot;#更新-2016-05-14-博客已从-Octopress-迁移至-Hexo&quot; class=&quot;headerlink&quot; title=&quot;更新: 2016.05.14 - 博
+    
+    </summary>
+    
+    
+      <category term="Blog" scheme="http://yangcaimu.github.io/tags/Blog/"/>
+    
+      <category term="Octopress" scheme="http://yangcaimu.github.io/tags/Octopress/"/>
+    
+  </entry>
+  
+</feed>
