@@ -221,9 +221,9 @@
     </summary>
     
     
-      <category term="Skills" scheme="http://yangcaimu.github.io/tags/Skills/"/>
-    
       <category term="Windows" scheme="http://yangcaimu.github.io/tags/Windows/"/>
+    
+      <category term="Skills" scheme="http://yangcaimu.github.io/tags/Skills/"/>
     
   </entry>
   
@@ -406,9 +406,9 @@
     </summary>
     
     
-      <category term="Mac" scheme="http://yangcaimu.github.io/tags/Mac/"/>
-    
       <category term="Skills" scheme="http://yangcaimu.github.io/tags/Skills/"/>
+    
+      <category term="Mac" scheme="http://yangcaimu.github.io/tags/Mac/"/>
     
   </entry>
   
