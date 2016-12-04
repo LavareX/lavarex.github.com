@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yangcaimu.github.io/"/>
-  <updated>2016-07-12T10:14:17.000Z</updated>
+  <updated>2016-12-04T16:16:29.000Z</updated>
   <id>http://yangcaimu.github.io/</id>
   
   <author>
@@ -16,11 +16,57 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>添加约束的恰当时机</title>
+    <link href="http://yangcaimu.github.io/2016/12/05/%E6%B7%BB%E5%8A%A0%E7%BA%A6%E6%9D%9F%E7%9A%84%E6%81%B0%E5%BD%93%E6%97%B6%E6%9C%BA/"/>
+    <id>http://yangcaimu.github.io/2016/12/05/添加约束的恰当时机/</id>
+    <published>2016-12-04T16:07:30.000Z</published>
+    <updated>2016-12-04T16:16:29.000Z</updated>
+    
+    <content type="html">&lt;p&gt;总的来说，在 iOS 开发中添加约束有 2 种方式，通过 Interface Builder 的界面拖拽添加，或者手写代码添加。&lt;/p&gt;
+&lt;h3 id=&quot;Interface-Builder-实现&quot;&gt;&lt;a href=&quot;#Interface-Builder-实现&quot; class=&quot;headerlink&quot; title=&quot;Interface Builder 实现&quot;&gt;&lt;/a&gt;Interface Builder 实现&lt;/h3&gt;&lt;p&gt;在 Interface Builder 下只能通过界面添加，所以无需考虑添加的时机。&lt;/p&gt;
+&lt;h3 id=&quot;代码实现&quot;&gt;&lt;a href=&quot;#代码实现&quot; class=&quot;headerlink&quot; title=&quot;代码实现&quot;&gt;&lt;/a&gt;代码实现&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;初始化的约束设置在 &lt;code&gt;- (void)viewDidLoad&lt;/code&gt; 方法中添加&lt;/li&gt;
+&lt;li&gt;后期需要修改更新的约束设置则在 &lt;code&gt;- (void)updateConstraints&lt;/code&gt; 方法中添加&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;关于第一点的说法在 &lt;a href=&quot;https://developer.apple.com/videos/play/wwdc2015/219/?time=269&quot;&gt;WWDC 2015 的 Session 219 - Mysteries of Auto Layout, Part 2&lt;/a&gt; 中有提到：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;All of your initial constraint setup should ideally happen inside Interface Builder.&lt;br&gt;Or if you really find that you need to allocate your constraints programmatically, some place like viewDidLoad is much better.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;第二点的说法则在 &lt;code&gt;- (void)updateConstraints&lt;/code&gt; 的&lt;a href=&quot;https://developer.apple.com/reference/uikit/uiview/1622512-updateconstraints&quot;&gt;文档&lt;/a&gt;中有提到：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Override this method to optimize changes to your constraints.&lt;br&gt;……&lt;br&gt;Your implementation must be as efficient as possible. Do not deactivate all your constraints, then reactivate the ones you need. Instead, your app must have some way of tracking your constraints, and validating them during each update pass. Only change items that need to be changed. During each update pass, you must ensure that you have the appropriate constraints for the app’s current state.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;大概的意思就是当需要修改约束时，保留待修改的约束的引用，在该方法中的合适时机进行修改。&lt;/p&gt;
+&lt;h4 id=&quot;注意事项&quot;&gt;&lt;a href=&quot;#注意事项&quot; class=&quot;headerlink&quot; title=&quot;注意事项&quot;&gt;&lt;/a&gt;注意事项&lt;/h4&gt;&lt;p&gt;若全部的约束都是写在 &lt;code&gt;- (void)updateConstraints&lt;/code&gt; 方法中的话，需要额外设置 &lt;code&gt;UIView&lt;/code&gt; 的 &lt;code&gt;requiresConstraintBasedLayout&lt;/code&gt; 属性为 &lt;code&gt;YES&lt;/code&gt;。&lt;br&gt;因为当代码全部写在 &lt;code&gt;- (void)updateConstraints&lt;/code&gt; 方法中时，系统是不知道当前 &lt;code&gt;View&lt;/code&gt; 是否采用约束的方式来布局，所以就不会调用 &lt;code&gt;- (void)updateConstraints&lt;/code&gt; 方法，所以为了解决「先有鸡还是先有蛋」的问题，把 &lt;code&gt;requiresConstraintBasedLayout&lt;/code&gt; 属性设置为 &lt;code&gt;YES&lt;/code&gt;，以告诉系统该 &lt;code&gt;View&lt;/code&gt; 采用约束的方式来布局。&lt;br&gt;这个比较坑，在文档中并没有提及到，但是在 &lt;code&gt;UIView&lt;/code&gt; 的头文件（打开 Xcode，按下快捷键「⇧⌘O」后，输入 &lt;code&gt;requiresConstraintBasedLayout&lt;/code&gt;）中可以找到：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;constraint-based layout engages lazily when someone tries to use it (e.g., adds a constraint to a view).  If you do all of your constraint set up in -updateConstraints, you might never even receive updateConstraints if no one makes a constraint.  To fix this chicken and egg problem, override this method to return YES if your view needs the window to use constraint-based layout.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&quot;参考&quot;&gt;&lt;a href=&quot;#参考&quot; class=&quot;headerlink&quot; title=&quot;参考&quot;&gt;&lt;/a&gt;参考&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;http://www.edwardhuynh.com/blog/2013/11/24/the-mystery-of-the-requiresconstraintbasedlayout/&quot;&gt;The Mystery of the +requiresConstraintBasedLayout - TIL by Ed&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://developer.apple.com/videos/play/wwdc2015/219/?time=269&quot;&gt;Mysteries of Auto Layout, Part 2 - WWDC 2015 - Videos - Apple Developer&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;总的来说，在 iOS 开发中添加约束有 2 种方式，通过 Interface Builder 的界面拖拽添加，或者手写代码添加。&lt;/p&gt;
+&lt;h3 id=&quot;Interface-Builder-实现&quot;&gt;&lt;a href=&quot;#Interface-Builder-实现&quot; class=
+    
+    </summary>
+    
+    
+      <category term="iOS" scheme="http://yangcaimu.github.io/tags/iOS/"/>
+    
+      <category term="Constraint" scheme="http://yangcaimu.github.io/tags/Constraint/"/>
+    
+  </entry>
+  
+  <entry>
     <title>写作本身的一些参考资料</title>
     <link href="http://yangcaimu.github.io/2016/07/12/%E5%86%99%E4%BD%9C%E6%9C%AC%E8%BA%AB%E7%9A%84%E4%B8%80%E4%BA%9B%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/"/>
     <id>http://yangcaimu.github.io/2016/07/12/写作本身的一些参考资料/</id>
     <published>2016-07-12T10:11:22.000Z</published>
-    <updated>2016-07-12T10:14:17.000Z</updated>
+    <updated>2016-07-12T10:16:53.000Z</updated>
     
     <content type="html">&lt;blockquote&gt;
 &lt;p&gt;好的排版能让人眼前一亮，赏心悦目。&lt;/p&gt;
@@ -54,7 +100,7 @@
     <link href="http://yangcaimu.github.io/2016/06/09/Alfred-workflow-%E5%BF%AB%E9%80%9F%E6%89%93%E5%BC%80-Xcode-%E5%B7%A5%E7%A8%8B/"/>
     <id>http://yangcaimu.github.io/2016/06/09/Alfred-workflow-快速打开-Xcode-工程/</id>
     <published>2016-06-09T15:09:02.000Z</published>
-    <updated>2016-07-03T11:09:54.000Z</updated>
+    <updated>2016-07-12T10:37:08.000Z</updated>
     
     <content type="html">&lt;h3 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot; title=&quot;背景&quot;&gt;&lt;/a&gt;背景&lt;/h3&gt;&lt;p&gt;作为一个 iOS 开发者，常常需要打开 Xcode 工程项目，一般情况下都是&lt;/p&gt;
 &lt;blockquote&gt;
@@ -114,7 +160,7 @@
     
     <summary type="html">
     
-      制作「快速打开 Xcode 工程」的 Alfred workflow
+      制作「快速打开 Xcode 工程」的 Alfred workflow。
     
     </summary>
     
@@ -221,9 +267,9 @@
     </summary>
     
     
-      <category term="Windows" scheme="http://yangcaimu.github.io/tags/Windows/"/>
-    
       <category term="Skills" scheme="http://yangcaimu.github.io/tags/Skills/"/>
+    
+      <category term="Windows" scheme="http://yangcaimu.github.io/tags/Windows/"/>
     
   </entry>
   
@@ -406,9 +452,9 @@
     </summary>
     
     
-      <category term="Skills" scheme="http://yangcaimu.github.io/tags/Skills/"/>
-    
       <category term="Mac" scheme="http://yangcaimu.github.io/tags/Mac/"/>
+    
+      <category term="Skills" scheme="http://yangcaimu.github.io/tags/Skills/"/>
     
   </entry>
   
