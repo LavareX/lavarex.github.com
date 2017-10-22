@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yangcaimu.github.io/"/>
-  <updated>2016-12-04T16:16:29.000Z</updated>
+  <updated>2017-10-22T09:47:01.000Z</updated>
   <id>http://yangcaimu.github.io/</id>
   
   <author>
@@ -14,6 +14,124 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>读 SDWebImage 源码小记</title>
+    <link href="http://yangcaimu.github.io/2017/10/22/%E8%AF%BB-SDWebImage-%E6%BA%90%E7%A0%81%E5%B0%8F%E8%AE%B0/"/>
+    <id>http://yangcaimu.github.io/2017/10/22/读-SDWebImage-源码小记/</id>
+    <published>2017-10-22T09:42:52.000Z</published>
+    <updated>2017-10-22T09:47:01.000Z</updated>
+    
+    <content type="html">&lt;p&gt;Version: 4.1.2&lt;/p&gt;
+&lt;h2 id=&quot;流程&quot;&gt;&lt;a href=&quot;#流程&quot; class=&quot;headerlink&quot; title=&quot;流程&quot;&gt;&lt;/a&gt;流程&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;/images/2017-10-22-读-SDWebImage-源码小记-SDWebImageSequenceDiagram.png&quot; alt=&quot;SDWebImageSequenceDiagra&quot;&gt;&lt;/p&gt;
+&lt;h3 id=&quot;基本流程&quot;&gt;&lt;a href=&quot;#基本流程&quot; class=&quot;headerlink&quot; title=&quot;基本流程&quot;&gt;&lt;/a&gt;&lt;a href=&quot;https://github.com/rs/SDWebImage/blob/master/Docs/SDWebImageSequenceDiagram.png&quot;&gt;基本流程&lt;/a&gt;&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;通过对象 (eg: &lt;code&gt;UIImageView&lt;/code&gt;) 的 &lt;code&gt;Category&lt;/code&gt; (&lt;code&gt;sd_setImageWithURL()&lt;/code&gt;) 作为入口&lt;/li&gt;
+&lt;li&gt;调用基类 &lt;code&gt;UIView&lt;/code&gt; 的 &lt;code&gt;Category&lt;/code&gt; (&lt;code&gt;sd_internalSetImageWithURL()&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;调用管理类 &lt;code&gt;SDWebImageManger&lt;/code&gt; 的 &lt;code&gt;loadImageWithURL:()&lt;/code&gt; 方法，由 &lt;code&gt;SDWebImageManger&lt;/code&gt; 协调 &lt;code&gt;SDImageCache&lt;/code&gt;、&lt;code&gt;SDWebImageDownloader&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;调用缓存类 &lt;code&gt;SDImageCache&lt;/code&gt; 的 &lt;code&gt;queryDiskCacheForKey()&lt;/code&gt; 先去检查有没缓存（内存+磁盘）&lt;/li&gt;
+&lt;li&gt;有缓存，返回缓存图片&lt;/li&gt;
+&lt;li&gt;若没有，由 &lt;code&gt;SDWebImageDownloader&lt;/code&gt; 发起请求下载图片 &lt;code&gt;downloadImage(url, options, progress, completed)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;返回下载结果回调给 &lt;code&gt;SDWebImageManger&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;下载图片成功并用 &lt;code&gt;SDImageCache&lt;/code&gt; 的 &lt;code&gt;storeImage()&lt;/code&gt; 缓存图片&lt;/li&gt;
+&lt;li&gt;返回图片给基类 &lt;code&gt;UIView&lt;/code&gt;，缓存或者下载的&lt;/li&gt;
+&lt;li&gt;图片设置到对象上 (eg: &lt;code&gt;UIImageView&lt;/code&gt;)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&quot;主要文件&quot;&gt;&lt;a href=&quot;#主要文件&quot; class=&quot;headerlink&quot; title=&quot;主要文件&quot;&gt;&lt;/a&gt;&lt;a href=&quot;https://github.com/rs/SDWebImage/blob/master/Docs/SDWebImageClassDiagram.png&quot;&gt;主要文件&lt;/a&gt;&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;入口：&lt;code&gt;Category&lt;/code&gt;&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;UIImageView+WebCache&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;UIButton+WebCache&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;UIView+WebCache&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;……&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;缓存&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;SDImageCacheConfig&lt;/code&gt;：缓存配置&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;SDImageCache&lt;/code&gt;：缓存管理&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;下载&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;SDWebImageDownloaderOperation&lt;/code&gt;：实际下载操作&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;SDWebImageDownloader&lt;/code&gt;：下载管理&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;编码／解码&lt;ul&gt;
+&lt;li&gt;SDWebImageCodersManager: 编解码管理&lt;/li&gt;
+&lt;li&gt;SDWebImageCoder：编解码协议&lt;/li&gt;
+&lt;li&gt;SDWebImageImageIOCoder：PNG／JPEG／TIFF 编解码，解压缩，显示大图&lt;/li&gt;
+&lt;li&gt;SDWebImageGIFCoder：GIF 编解码&lt;/li&gt;
+&lt;li&gt;SDWebImageWebPCoder：WebP 编解码&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;工具&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;SDWebImageManager&lt;/code&gt;：协调 &lt;code&gt;SDImageCache&lt;/code&gt;、&lt;code&gt;SDWebImageDownloader&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;SDWebImagePrefetcher&lt;/code&gt;：预下载图片&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;解压缩（Decompress）&quot;&gt;&lt;a href=&quot;#解压缩（Decompress）&quot; class=&quot;headerlink&quot; title=&quot;解压缩（Decompress）&quot;&gt;&lt;/a&gt;解压缩（Decompress）&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;解压缩&lt;/strong&gt;指的是，将压缩过的图片（&lt;a href=&quot;http://www.wikiwand.com/zh-hans/JPEG&quot;&gt;JPEG&lt;/a&gt;、&lt;a href=&quot;http://www.wikiwand.com/zh-hans/PNG&quot;&gt;PNG&lt;/a&gt;、&lt;a href=&quot;http://www.wikiwand.com/zh-hans/WebP&quot;&gt;WebP&lt;/a&gt;、&lt;a href=&quot;http://www.wikiwand.com/zh-hans/APNG&quot;&gt;APNG&lt;/a&gt;）解压成未压缩的&lt;a href=&quot;http://www.wikiwand.com/zh-hans/%E4%BD%8D%E5%9B%BE&quot;&gt;位图&lt;/a&gt;。&lt;/p&gt;
+&lt;h3 id=&quot;加载图片流程&quot;&gt;&lt;a href=&quot;#加载图片流程&quot; class=&quot;headerlink&quot; title=&quot;加载图片流程&quot;&gt;&lt;/a&gt;&lt;a href=&quot;https://github.com/path/FastImageCache#the-problem&quot;&gt;加载图片流程&lt;/a&gt;&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;假设用 &lt;code&gt;+[UIImage imageWithContentsOfFile:]&lt;/code&gt; 加载图片，它会创建 &lt;code&gt;UIImage&lt;/code&gt; 的一个引用，此时并不会发生解码&lt;/li&gt;
+&lt;li&gt;返回的 &lt;code&gt;UIImage&lt;/code&gt; 赋值给 &lt;code&gt;UIImageView&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;隐式 &lt;code&gt;CATransaction&lt;/code&gt; 捕获到图层树（&lt;code&gt;layer tree&lt;/code&gt;）的修改&lt;/li&gt;
+&lt;li&gt;在主线程 &lt;code&gt;run loop&lt;/code&gt; 的下一个循环时，&lt;code&gt;Core Animation&lt;/code&gt; 会提交这些隐式 &lt;code&gt;CATransaction&lt;/code&gt;，图片可能会创建一个 &lt;code&gt;copy&lt;/code&gt;。在 &lt;code&gt;copy&lt;/code&gt; 过程中，可能会发生如下一些或者全部步骤：&lt;ol&gt;
+&lt;li&gt;分配管理文件 IO、解压缩操作的内存缓冲区&lt;/li&gt;
+&lt;li&gt;文件数据从磁盘读取到内存中&lt;/li&gt;
+&lt;li&gt;压缩的图片数据解码成未压缩的位图格式，这通常是非常耗时的 CPU 操作&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Core Animation&lt;/code&gt; 将解压缩后的位图数据渲染到图层（&lt;code&gt;layer&lt;/code&gt;）上&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;其中「流程4步骤3」中图片的解压缩是一个非常耗时的操作，而且默认发生在主线程中。当显示的图片过多时，容易导致性能问题。特别是滚动时，尤为突出。&lt;/p&gt;
+&lt;p&gt;因此我们可以将图片的解压缩放在后台线程，不堵塞主线程。这就需要提前在后台线程解压缩，之后将解压缩后的图片在主线程赋值给 &lt;code&gt;UIImageView&lt;/code&gt;。&lt;/p&gt;
+&lt;h3 id=&quot;主要实现&quot;&gt;&lt;a href=&quot;#主要实现&quot; class=&quot;headerlink&quot; title=&quot;主要实现&quot;&gt;&lt;/a&gt;主要实现&lt;/h3&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/rs/SDWebImage/blob/master/SDWebImage/SDWebImageImageIOCoder.m&quot;&gt;SDWebImageImageIOCoder.m&lt;/a&gt;&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;28&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;29&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;30&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;31&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;32&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;33&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;34&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;35&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;36&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;37&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;38&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;39&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;40&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;41&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;- (nullable UIImage *)sd_decompressedImageWithImage:(nullable UIImage *)image &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    ...&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    // autorelease the bitmap context and all vars to help system to free memory when there are memory warning.&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    // on iOS7, do not forget to call [[SDImageCache sharedImageCache] clearMemory];&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    @autoreleasepool&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        CGImageRef imageRef = image.CGImage;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        CGColorSpaceRef colorspaceRef = [[self class] colorSpaceForImageRef:imageRef];&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        size_t width = CGImageGetWidth(imageRef);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        size_t height = CGImageGetHeight(imageRef);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        size_t bytesPerRow = kBytesPerPixel * width;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        // kCGImageAlphaNone is not supported in CGBitmapContextCreate.&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        // Since the original image here has no alpha info, use kCGImageAlphaNoneSkipLast&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        // to create bitmap graphics contexts without alpha info.&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        CGContextRef context = CGBitmapContextCreate(NULL,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                                                     width,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                                                     height,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                                                     kBitsPerComponent,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                                                     bytesPerRow,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                                                     colorspaceRef,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                                                     kCGBitmapByteOrderDefault|kCGImageAlphaNoneSkipLast);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        if (context == NULL) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            return image;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        // Draw the image into the context and retrieve the new bitmap image without alpha&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        CGContextDrawImage(context, CGRectMake(0, 0, width, height), imageRef); // Decompress&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        CGImageRef imageRefWithoutAlpha = CGBitmapContextCreateImage(context);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        UIImage *imageWithoutAlpha = [UIImage imageWithCGImage:imageRefWithoutAlpha&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                                                         scale:image.scale&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                                                   orientation:image.imageOrientation];&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        CGContextRelease(context);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        CGImageRelease(imageRefWithoutAlpha);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        return imageWithoutAlpha;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;对比了 &lt;a href=&quot;https://github.com/ibireme/YYWebImage/blob/093193c67bfa2409af93e618a48e3208d63106a5/YYWebImage/Image/YYImageCoder.m#L875-L892&quot;&gt;YYWebImage&lt;/a&gt;、&lt;a href=&quot;https://github.com/Flipboard/FLAnimatedImage/blob/master/FLAnimatedImage/FLAnimatedImage.m#L651-L719&quot;&gt;FLAnimatedImage&lt;/a&gt; 的解压缩代码，&lt;a href=&quot;https://developer.apple.com/library/content/documentation/GraphicsImaging/Conceptual/drawingwithquartz2d/dq_context/dq_context.html#//apple_ref/doc/uid/TP30001066-CH203-BCIBHHBB&quot;&gt;iOS 位图上下文支持的像素格式&lt;/a&gt;，以及 &lt;a href=&quot;https://developer.apple.com/documentation/uikit/1623912-uigraphicsbeginimagecontextwitho?language=objc#&quot;&gt;UIGraphicsBeginImageContextWithOptions&lt;/a&gt; 的讨论说明，最终的 &lt;code&gt;CGContextRef CGBitmapContextCreate(void *data, size_t width, size_t height, size_t bitsPerComponent, size_t bytesPerRow, CGColorSpaceRef space, uint32_t bitmapInfo)&lt;/code&gt; 的传入参数应该如下：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;CGBitmapContextCreate(NULL,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                      CGImageGetWidth(imageRef),&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                      CGImageGetHeight(imageRef),&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                      8, // bitsPerComponent&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                      0, // bytesPerRow&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                      CGColorSpaceCreateDeviceRGB(),&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                      kCGBitmapByteOrderDefault| hasAlpha ? kCGImageAlphaPremultipliedFirst : kCGImageAlphaNoneSkipFirst)&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h2 id=&quot;加载大图&quot;&gt;&lt;a href=&quot;#加载大图&quot; class=&quot;headerlink&quot; title=&quot;加载大图&quot;&gt;&lt;/a&gt;加载大图&lt;/h2&gt;&lt;p&gt;当加载一张很大的图片时，如果直接加载到内存中，很容易超出 App 的最大内存预算，轻则 App 被系统 Kill，重则整个系统重启。详细参数见：&lt;a href=&quot;https://stackoverflow.com/a/15200855/3097963&quot;&gt;iOS App 的最大内存预算&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;因此我们可以采用 &lt;a href=&quot;http://www.wikiwand.com/zh-hans/%E5%9F%BA%E4%BA%8E%E5%9B%BE%E5%9D%97%E6%B8%B2%E6%9F%93&quot;&gt;Tiled rendering&lt;/a&gt; 的方式渲染图片，每次只加载图片的一小部分，最后再拼成一张图。详细可以看看 &lt;a href=&quot;https://github.com/rs/SDWebImage/blob/master/SDWebImage/SDWebImageImageIOCoder.m#L266-L382&quot;&gt;SDWebImageImageIOCoder.m&lt;/a&gt; 的实现或者&lt;a href=&quot;https://developer.apple.com/library/content/samplecode/LargeImageDownsizing/Introduction/Intro.html#//apple_ref/doc/uid/DTS40011173-Intro-DontLinkElementID_2&quot;&gt;苹果示例代码&lt;/a&gt;。&lt;/p&gt;
+&lt;h2 id=&quot;其他&quot;&gt;&lt;a href=&quot;#其他&quot; class=&quot;headerlink&quot; title=&quot;其他&quot;&gt;&lt;/a&gt;其他&lt;/h2&gt;&lt;h3 id=&quot;主队列-vs-主线程（Main-Queue-vs-Main-Thread）&quot;&gt;&lt;a href=&quot;#主队列-vs-主线程（Main-Queue-vs-Main-Thread）&quot; class=&quot;headerlink&quot; title=&quot;主队列 vs 主线程（Main Queue vs. Main Thread）&quot;&gt;&lt;/a&gt;主队列 vs 主线程（Main Queue vs. Main Thread）&lt;/h3&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;#ifndef dispatch_main_async_safe&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;#define dispatch_main_async_safe(block)\&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    if (strcmp(dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL), dispatch_queue_get_label(dispatch_get_main_queue())) == 0) &amp;#123;\&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        block();\&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125; else &amp;#123;\&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        dispatch_async(dispatch_get_main_queue(), block);\&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;#endif&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;这是 SDWebImage 的主线程判断代码，使代码一直在主线程上运行。&lt;/p&gt;
+&lt;p&gt;这里的主线程判断是用&lt;strong&gt;主队列&lt;/strong&gt;进行判断，而不是&lt;strong&gt;主线程&lt;/strong&gt;判断。为什么呢？&lt;/p&gt;
+&lt;p&gt;首先在 &lt;code&gt;dispatch_sync&lt;/code&gt; 的&lt;a href=&quot;https://developer.apple.com/documentation/dispatch/1452870-dispatch_sync?language=objc#&quot;&gt;文档讨论中&lt;/a&gt;有说到：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;… As an optimization, this function invokes the block on the current thread when possible.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;作为优化，&lt;code&gt;dispatch_sync&lt;/code&gt; 有可能会在当前线程中调用 &lt;code&gt;block&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;假设你调用了如下代码，当然了，尽量不要在主线程调用任意同步操作（容易死锁😔）。&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;// main queue environment&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;dispatch_queue_t nonMainQueue = dispatch_queue_t(&amp;quot;com.lavare.nonMainQueue&amp;quot;, DISPATCH_QUEUE_CONCURRENT)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;dispatch_sync(nonMainQueue) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    // Other tasks&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;code&gt;dispatch_sync&lt;/code&gt; 分配的任务在 &lt;code&gt;nonMainQueue&lt;/code&gt; 队列中调用，因为优化问题，&lt;code&gt;nonMainQueue&lt;/code&gt; 队列有可能会在当前线程中调用，即主线程。&lt;/p&gt;
+&lt;p&gt;那主线程中会有 2 种情况，有可能是主队列，有可能是非主队列。&lt;/p&gt;
+&lt;p&gt;所以对于 &lt;code&gt;UIKit&lt;/code&gt; 、需要主线程或者主队列的代码，用主队列判断会更安全。&lt;/p&gt;
+&lt;h2 id=&quot;参考&quot;&gt;&lt;a href=&quot;#参考&quot; class=&quot;headerlink&quot; title=&quot;参考&quot;&gt;&lt;/a&gt;参考&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/rs/SDWebImage&quot;&gt;SDWebImage&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://www.wikiwand.com/zh/%E6%A0%85%E6%A0%BC%E5%8C%96&quot;&gt;栅格化&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://www.wikiwand.com/zh-hans/%E8%89%B2%E5%BD%A9%E6%B7%B1%E5%BA%A6&quot;&gt;色彩深度&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://www.wikiwand.com/zh-hans/%E4%BD%8D%E5%9B%BE&quot;&gt;位图&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://www.wikiwand.com/zh-hans/%E5%83%8F%E7%B4%A0&quot;&gt;像素&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://www.wikiwand.com/zh-hans/%E5%9F%BA%E4%BA%8E%E5%9B%BE%E5%9D%97%E6%B8%B2%E6%9F%93&quot;&gt;基于图块渲染&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://blog.imerc.xyz/2017/07/09/ios-image-decode/&quot;&gt;iOS中的图片解码&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://blog.leichunfeng.com/blog/2017/02/20/talking-about-the-decompression-of-the-image-in-ios/&quot;&gt;谈谈 iOS 中图片的解压缩&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://segmentfault.com/a/1190000002776279#articleHeader8&quot;&gt;iOS 异步图片加载优化与常用开源库分析&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://developer.apple.com/library/content/samplecode/LargeImageDownsizing/Introduction/Intro.html#//apple_ref/doc/uid/DTS40011173-Intro-DontLinkElementID_2&quot;&gt;Large Image Downsizing&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://blog.benjamin-encz.de/post/main-queue-vs-main-thread&quot;&gt;GCD’s Main Queue vs. Main Thread&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Version: 4.1.2&lt;/p&gt;
+&lt;h2 id=&quot;流程&quot;&gt;&lt;a href=&quot;#流程&quot; class=&quot;headerlink&quot; title=&quot;流程&quot;&gt;&lt;/a&gt;流程&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;/images/2017-10-22-读-SDWebImage-源码小记-S
+    
+    </summary>
+    
+    
+      <category term="iOS" scheme="http://yangcaimu.github.io/tags/iOS/"/>
+    
+      <category term="SDWebImage" scheme="http://yangcaimu.github.io/tags/SDWebImage/"/>
+    
+      <category term="源码解析" scheme="http://yangcaimu.github.io/tags/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"/>
+    
+  </entry>
   
   <entry>
     <title>添加约束的恰当时机</title>
@@ -165,13 +283,13 @@
     </summary>
     
     
-      <category term="Mac" scheme="http://yangcaimu.github.io/tags/Mac/"/>
-    
       <category term="Alfred" scheme="http://yangcaimu.github.io/tags/Alfred/"/>
     
       <category term="Workflow" scheme="http://yangcaimu.github.io/tags/Workflow/"/>
     
       <category term="Xcode" scheme="http://yangcaimu.github.io/tags/Xcode/"/>
+    
+      <category term="Mac" scheme="http://yangcaimu.github.io/tags/Mac/"/>
     
   </entry>
   
@@ -267,9 +385,9 @@
     </summary>
     
     
-      <category term="Skills" scheme="http://yangcaimu.github.io/tags/Skills/"/>
-    
       <category term="Windows" scheme="http://yangcaimu.github.io/tags/Windows/"/>
+    
+      <category term="Skills" scheme="http://yangcaimu.github.io/tags/Skills/"/>
     
   </entry>
   
@@ -452,9 +570,9 @@
     </summary>
     
     
-      <category term="Mac" scheme="http://yangcaimu.github.io/tags/Mac/"/>
-    
       <category term="Skills" scheme="http://yangcaimu.github.io/tags/Skills/"/>
+    
+      <category term="Mac" scheme="http://yangcaimu.github.io/tags/Mac/"/>
     
   </entry>
   
