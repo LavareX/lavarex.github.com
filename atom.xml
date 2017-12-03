@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yangcaimu.github.io/"/>
-  <updated>2017-10-31T02:49:39.000Z</updated>
+  <updated>2017-12-03T16:20:53.000Z</updated>
   <id>http://yangcaimu.github.io/</id>
   
   <author>
@@ -16,11 +16,157 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>译 Image Resizing Techniques</title>
+    <link href="http://yangcaimu.github.io/2017/12/04/Image-Resizing-Techniques/"/>
+    <id>http://yangcaimu.github.io/2017/12/04/Image-Resizing-Techniques/</id>
+    <published>2017-12-03T16:01:00.000Z</published>
+    <updated>2017-12-03T16:20:53.000Z</updated>
+    
+    <content type="html">&lt;blockquote&gt;
+&lt;p&gt;原文：&lt;a href=&quot;http://nshipster.com/image-resizing/&quot;&gt;Image Resizing Techniques&lt;/a&gt;&lt;br&gt;作者：&lt;a href=&quot;http://nshipster.com/authors/mattt-thompson/&quot;&gt;Mattt Thompson&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;古往今来，iOS 开发者被一个简单的问题所困惑：“如何调整图像大小？”。由于开发者和平台之间相互不信任，导致这个问题令人费解。网页搜索结果中有许许多多的代码示例，都声称是正确的方案，其他的都是错误的。&lt;/p&gt;
+&lt;p&gt;这真的好尴尬 😂。&lt;/p&gt;
+&lt;p&gt;本周文章通过对每个在 iOS （和 MacOS，UIImage -&amp;gt; NSImage 进行合适的转换）上的图像大小调整方法进行实验证明提供性能特点，尽力对每个方法提供清晰的解释，而不是简单的用一个方法应用所有场景。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;在进一步阅读之前，请注意以下事项:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;当在 &lt;code&gt;UIImageView&lt;/code&gt; 中设置 &lt;code&gt;UIImage&lt;/code&gt; 时，在大多数使用场景中不必手动调整图像大小。可以简单地设置 &lt;code&gt;contentMode&lt;/code&gt; 属性为 &lt;code&gt;.scaleAspectFit&lt;/code&gt; 确保整张图像显示在 &lt;code&gt;image view&lt;/code&gt; 的 &lt;code&gt;frame&lt;/code&gt; 中，或者设置为 &lt;code&gt;.scaleAspectFill&lt;/code&gt; 让整张图像通过中间裁剪来填充整个 &lt;code&gt;image view&lt;/code&gt;。&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;imageView.contentMode = .scaleAspectFit&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;imageView.image = image&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h2 id=&quot;确定缩放大小&quot;&gt;&lt;a href=&quot;#确定缩放大小&quot; class=&quot;headerlink&quot; title=&quot;确定缩放大小&quot;&gt;&lt;/a&gt;确定缩放大小&lt;/h2&gt;&lt;p&gt;在做任何图像大小调整时，首先必须确定缩放的目标大小。&lt;/p&gt;
+&lt;h3 id=&quot;按系数缩放&quot;&gt;&lt;a href=&quot;#按系数缩放&quot; class=&quot;headerlink&quot; title=&quot;按系数缩放&quot;&gt;&lt;/a&gt;按系数缩放&lt;/h3&gt;&lt;p&gt;通过常量因子进行图像缩放是最简单的方式。通常来说，这涉及到除以整数以至于减少原来的大小（而不是乘以整数以至于放大原来的大小）。&lt;/p&gt;
+&lt;p&gt;新的 &lt;code&gt;CGSize&lt;/code&gt; 能够通过单独缩放宽度和高度计算得到：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;let size = CGSize(width: image.size.width / 2, height: image.size.height / 2)&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;…或者应用一个 &lt;code&gt;CGAffineTransform&lt;/code&gt;:&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;let size = CGSizeApplyAffineTransform(image.size, CGAffineTransformMakeScale(0.5, 0.5))&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;按长宽比缩放&quot;&gt;&lt;a href=&quot;#按长宽比缩放&quot; class=&quot;headerlink&quot; title=&quot;按长宽比缩放&quot;&gt;&lt;/a&gt;按长宽比缩放&lt;/h3&gt;&lt;p&gt;在不改变原来的长宽比的情况下缩放原来的大小以适合矩形时非常有用。&lt;code&gt;AVFoundation&lt;/code&gt; 框架中的 &lt;code&gt;AVMakeRectWithAspectRatioInsideRect&lt;/code&gt; 是个有用的函数可以帮助你计算：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;import AVFoundation&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;let rect = AVMakeRectWithAspectRatioInsideRect(image.size, imageView.bounds)&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h2 id=&quot;图像大小调整&quot;&gt;&lt;a href=&quot;#图像大小调整&quot; class=&quot;headerlink&quot; title=&quot;图像大小调整&quot;&gt;&lt;/a&gt;图像大小调整&lt;/h2&gt;&lt;p&gt;这里有一系列不同的方法去调整图像大小，每个都有不同能力和性能特点。&lt;/p&gt;
+&lt;h3 id=&quot;UIGraphicsBeginImageContextWithOptions-amp-UIImage-drawInRect&quot;&gt;&lt;a href=&quot;#UIGraphicsBeginImageContextWithOptions-amp-UIImage-drawInRect&quot; class=&quot;headerlink&quot; title=&quot;UIGraphicsBeginImageContextWithOptions &amp;amp; UIImage -drawInRect:&quot;&gt;&lt;/a&gt;UIGraphicsBeginImageContextWithOptions &amp;amp; UIImage -drawInRect:&lt;/h3&gt;&lt;p&gt;图像大小调整的最高级 API 能够在 &lt;code&gt;UIKit&lt;/code&gt; 框架中找到。给定 &lt;code&gt;UIImage&lt;/code&gt;，通过 &lt;code&gt;UIGraphicsBeginImageContextWithOptions()&lt;/code&gt; 和 &lt;code&gt;UIGraphicsGetImageFromCurrentImageContext()&lt;/code&gt;，临时图形上下文能够用来渲染成缩放版本的图像：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;let image = UIImage(contentsOfFile: self.URL.absoluteString!)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;let size = CGSizeApplyAffineTransform(image.size, CGAffineTransformMakeScale(0.5, 0.5))&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;let hasAlpha = false&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;let scale: CGFloat = 0.0 // Automatically use scale factor of main screen&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;UIGraphicsBeginImageContextWithOptions(size, !hasAlpha, scale)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;image.drawInRect(CGRect(origin: CGPointZero, size: size))&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;let scaledImage = UIGraphicsGetImageFromCurrentImageContext()&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;UIGraphicsEndImageContext()&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;code&gt;UIGraphicsBeginImageContextWithOptions()&lt;/code&gt; 创建原始绘制的临时渲染上下文。第一个入参 &lt;code&gt;size&lt;/code&gt; 是缩放后的图像大小。第二个入参 &lt;code&gt;isOpaque&lt;/code&gt; 是用来确定是否需要渲染 alpha 通道。对于不透明（即 alpha 通道）的图像，将其设置为 &lt;code&gt;false&lt;/code&gt; 可能会导致粉红色的图像。第三个入参 &lt;code&gt;scale&lt;/code&gt; 是显示缩放系数。当设置为 0.0 时，将使用 &lt;code&gt;main screen&lt;/code&gt; 的缩放系数，对于 Retina 显示屏，其缩放系数为 2.0 或更高（iPhone 6 Plus 为 3.0）。&lt;/p&gt;
+&lt;h3 id=&quot;CGBitmapContextCreate-amp-CGContextDrawImage&quot;&gt;&lt;a href=&quot;#CGBitmapContextCreate-amp-CGContextDrawImage&quot; class=&quot;headerlink&quot; title=&quot;CGBitmapContextCreate &amp;amp; CGContextDrawImage&quot;&gt;&lt;/a&gt;CGBitmapContextCreate &amp;amp; CGContextDrawImage&lt;/h3&gt;&lt;p&gt;Core Graphics / Quartz 2D 提供了一套较低级的 API，允许进行更高级的配置。给定 &lt;code&gt;CGImage&lt;/code&gt;，通过 &lt;code&gt;CGBitmapContextCreate()&lt;/code&gt; 和 &lt;code&gt;CGBitmapContextCreateImage()&lt;/code&gt;，临时位图上下文能够用来渲染缩放的图像：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;let cgImage = UIImage(contentsOfFile: self.URL.absoluteString!).CGImage&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;let width = CGImageGetWidth(cgImage) / 2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;let height = CGImageGetHeight(cgImage) / 2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;let bitsPerComponent = CGImageGetBitsPerComponent(cgImage)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;let bytesPerRow = CGImageGetBytesPerRow(cgImage)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;let colorSpace = CGImageGetColorSpace(cgImage)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;let bitmapInfo = CGImageGetBitmapInfo(cgImage)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;let context = CGBitmapContextCreate(nil, width, height, bitsPerComponent, bytesPerRow, colorSpace, bitmapInfo.rawValue)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;CGContextSetInterpolationQuality(context, kCGInterpolationHigh)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;CGContextDrawImage(context, CGRect(origin: CGPointZero, size: CGSize(width: CGFloat(width), height: CGFloat(height))), cgImage)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;let scaledImage = CGBitmapContextCreateImage(context).flatMap &amp;#123; UIImage(CGImage: $0) &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;code&gt;CGBitmapContextCreate&lt;/code&gt; 需要几个参数构建具有所需的尺寸和给定的颜色空间中每个通道的内存量的上下文。在这个例子中，这些值都是从 &lt;code&gt;CGImage&lt;/code&gt; 中获取的。接下来，&lt;code&gt;CGContextSetInterpolationQuality&lt;/code&gt; 允许上下文以各种保真度水平内插像素。在这种情况下，传递 &lt;code&gt;kCGInterpolationHigh&lt;/code&gt; 以获得最佳结果。&lt;code&gt;CGContextDrawImage&lt;/code&gt; 允许图像以给定的大小和位置绘制，允许图像在特定的边上被裁剪或者适合一组图像特征，例如面部。最后，&lt;code&gt;CGBitmapContextCreateImage&lt;/code&gt; 从上下文中创建 &lt;code&gt;CGImage&lt;/code&gt;。&lt;/p&gt;
+&lt;h3 id=&quot;CGImageSourceCreateThumbnailAtIndex&quot;&gt;&lt;a href=&quot;#CGImageSourceCreateThumbnailAtIndex&quot; class=&quot;headerlink&quot; title=&quot;CGImageSourceCreateThumbnailAtIndex&quot;&gt;&lt;/a&gt;CGImageSourceCreateThumbnailAtIndex&lt;/h3&gt;&lt;p&gt;Image I/O 是一个功能强大但鲜为人知的用于处理图像的框架。独立于 Core Graphics，它能读写很多不同的格式，访问照片的元数据，执行常见的图像处理操作。该框架提供了平台上最快的图像编码器和解码器，具有先进的缓存机制，甚至可以增量加载图像。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;CGImageSourceCreateThumbnailAtIndex&lt;/code&gt; 提供了一个简洁的API，其中包含的选项与在等价的 Core Graphics 调用中找到的选项不同：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;import ImageIO&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;if let imageSource = CGImageSourceCreateWithURL(self.URL, nil) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    let options: [NSString: NSObject] = [&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        kCGImageSourceThumbnailMaxPixelSize: max(size.width, size.height) / 2.0,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        kCGImageSourceCreateThumbnailFromImageAlways: true&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    ]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    let scaledImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, options).flatMap &amp;#123; UIImage(CGImage: $0) &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;给定一个 &lt;code&gt;CGImageSource&lt;/code&gt; 和一组选项，&lt;code&gt;CGImageSourceCreateThumbnailAtIndex&lt;/code&gt; 创建了一个缩略图。通过 &lt;code&gt;kCGImageSourceThumbnailMaxPixelSize&lt;/code&gt; 完成调整大小。指定最大尺寸除以常数系数可以在保持原始长宽比的同时对图像进行缩放。通过指定 &lt;code&gt;kCGImageSourceCreateThumbnailFromImageIfAbsent&lt;/code&gt; 或者 &lt;code&gt;kCGImageSourceCreateThumbnailFromImageAlways&lt;/code&gt;，Image I/O 将会自动缓存缩放结果给后续的调用。&lt;/p&gt;
+&lt;h3 id=&quot;Core-Image-的-Lanczos-重采样&quot;&gt;&lt;a href=&quot;#Core-Image-的-Lanczos-重采样&quot; class=&quot;headerlink&quot; title=&quot;Core Image 的 Lanczos 重采样&quot;&gt;&lt;/a&gt;Core Image 的 Lanczos 重采样&lt;/h3&gt;&lt;p&gt;Core Image 通过 &lt;code&gt;CILanczosScaleTransform&lt;/code&gt; 过滤器提供了一个内置的 &lt;a href=&quot;https://en.wikipedia.org/wiki/Lanczos_resampling&quot;&gt;Lanczos 重采样&lt;/a&gt; 功能。尽管可以说是比 UIKit 更高级别的 API，但在 Core Image 中普遍使用键值编码（KVO）使其变得笨拙。&lt;/p&gt;
+&lt;p&gt;也就是说，至少这种模式是一致的。创建变换过滤器，配置它并渲染成输出图像的过程就像任何其他 Core Image 工作流程一样：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;let image = CIImage(contentsOfURL: self.URL)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;let filter = CIFilter(name: &amp;quot;CILanczosScaleTransform&amp;quot;)!&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;filter.setValue(image, forKey: &amp;quot;inputImage&amp;quot;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;filter.setValue(0.5, forKey: &amp;quot;inputScale&amp;quot;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;filter.setValue(1.0, forKey: &amp;quot;inputAspectRatio&amp;quot;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;let outputImage = filter.valueForKey(&amp;quot;outputImage&amp;quot;) as! CIImage&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;let context = CIContext(options: [kCIContextUseSoftwareRenderer: false])&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;let scaledImage = UIImage(CGImage: self.context.createCGImage(outputImage, fromRect: outputImage.extent()))&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;code&gt;CILanczosScaleTransform&lt;/code&gt; 接收 &lt;code&gt;inputImage&lt;/code&gt;，&lt;code&gt;inputScale&lt;/code&gt;，和 &lt;code&gt;inputAspectRatio&lt;/code&gt;，所有这些都是不言自明的。由于 &lt;code&gt;UIImage(CIImage:)&lt;/code&gt; 并不像预期的那样工作，因此需要 &lt;code&gt;CIContext&lt;/code&gt; 通过 &lt;code&gt;CGImageRef&lt;/code&gt; 中间表示来创建 &lt;code&gt;UIImage&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;创建一个 &lt;code&gt;CIContext&lt;/code&gt; 是一个昂贵的操作，因此应该总是使用缓存的上下文来重复调整大小。&lt;code&gt;CIContext&lt;/code&gt; 可以使用 GPU 或者 CPU（慢得多）来创建 &lt;code&gt;CIContext&lt;/code&gt; 进行渲染 - 使用选项字典中的 &lt;code&gt;kCIContextUseSoftwareRenderer&lt;/code&gt; 键来指定哪一个。&lt;/p&gt;
+&lt;h3 id=&quot;Accelerate-中的-vImage&quot;&gt;&lt;a href=&quot;#Accelerate-中的-vImage&quot; class=&quot;headerlink&quot; title=&quot;Accelerate 中的 vImage&quot;&gt;&lt;/a&gt;Accelerate 中的 vImage&lt;/h3&gt;&lt;p&gt;&lt;a href=&quot;https://developer.apple.com/library/prerelease/ios/documentation/Accelerate/Reference/AccelerateFWRef/index.html#//apple_ref/doc/uid/TP40009465&quot;&gt;Accelerate 框架&lt;/a&gt; 包含一套 &lt;code&gt;vImage&lt;/code&gt; 图像处理功能，并具有一组缩放图像缓冲区的&lt;a href=&quot;https://developer.apple.com/library/prerelease/ios/documentation/Performance/Reference/vImage_geometric/index.html#//apple_ref/doc/uid/TP40005490-CH212-145717&quot;&gt;功能&lt;/a&gt;。这些较低级别的 API 保证以较低的功耗实现高性能，但是要以自己管理缓冲区为代价。以下是 &lt;a href=&quot;https://gist.github.com/Nyx0uf/217d97f81f4889f4445a&quot;&gt;GitHub 上 Nyx0uf 提供&lt;/a&gt;的 Swift 版本的方法：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;28&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;29&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;30&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;31&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;32&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;33&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;34&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;35&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;36&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;let cgImage = UIImage(contentsOfFile: self.URL.absoluteString!).CGImage&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;// create a source buffer&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;var format = vImage_CGImageFormat(bitsPerComponent: 8, bitsPerPixel: 32, colorSpace: nil,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.First.rawValue),&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    version: 0, decode: nil, renderingIntent: CGColorRenderingIntent.RenderingIntentDefault)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;var sourceBuffer = vImage_Buffer()&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;defer &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    sourceBuffer.data.dealloc(Int(sourceBuffer.height) * Int(sourceBuffer.height) * 4)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;var error = vImageBuffer_InitWithCGImage(&amp;amp;sourceBuffer, &amp;amp;format, nil, cgImage, numericCast(kvImageNoFlags))&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;guard error == kvImageNoError else &amp;#123; return nil &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;// create a destination buffer&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;let scale = UIScreen.mainScreen().scale&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;let destWidth = Int(image.size.width * 0.5 * scale)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;let destHeight = Int(image.size.height * 0.5 * scale)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;let bytesPerPixel = CGImageGetBitsPerPixel(image.CGImage) / 8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;let destBytesPerRow = destWidth * bytesPerPixel&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;let destData = UnsafeMutablePointer&amp;lt;UInt8&amp;gt;.alloc(destHeight * destBytesPerRow)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;defer &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    destData.dealloc(destHeight * destBytesPerRow)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;var destBuffer = vImage_Buffer(data: destData, height: vImagePixelCount(destHeight), width: vImagePixelCount(destWidth), rowBytes: destBytesPerRow)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;// scale the image&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;error = vImageScale_ARGB8888(&amp;amp;sourceBuffer, &amp;amp;destBuffer, nil, numericCast(kvImageHighQualityResampling))&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;guard error == kvImageNoError else &amp;#123; return nil &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;// create a CGImage from vImage_Buffer&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;let destCGImage = vImageCreateCGImageFromBuffer(&amp;amp;destBuffer, &amp;amp;format, nil, nil, numericCast(kvImageNoFlags), &amp;amp;error)?.takeRetainedValue()&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;guard error == kvImageNoError else &amp;#123; return nil &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;// create a UIImage&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;let scaledImage = destCGImage.flatMap &amp;#123; UIImage(CGImage: $0, scale: 0.0, orientation: image.imageOrientation) &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;这里使用的 Accelerate API 明显比其他调整大小的方法在更低的层次上运行。要使用这个方法，&lt;br&gt;首先通过 &lt;code&gt;vImageBuffer_InitWithCGImage()&lt;/code&gt; 用 &lt;code&gt;vImage_CGImageFormat&lt;/code&gt; 从你的 CGImage 中创建源缓存区。目标缓冲区以所需的图像分辨率进行分配，然后 &lt;code&gt;vImageScale_ARGB8888&lt;/code&gt; 完成调整图像大小的实际工作。当对大于应用程序内存限制的图像进行操作时需要管理自己的缓冲区，这是留给读者的一个练习。&lt;/p&gt;
+&lt;h2 id=&quot;性能基准&quot;&gt;&lt;a href=&quot;#性能基准&quot; class=&quot;headerlink&quot; title=&quot;性能基准&quot;&gt;&lt;/a&gt;性能基准&lt;/h2&gt;&lt;p&gt;那么这些各种方法如何相互叠加呢？&lt;/p&gt;
+&lt;p&gt;以下是通过&lt;a href=&quot;https://github.com/natecook1000/Image-Resizing&quot;&gt;此项目&lt;/a&gt;在运行 iOS 8.4 的 iPhone 6 上完成的一组&lt;a href=&quot;http://nshipster.com/benchmarking/&quot;&gt;性能基准&lt;/a&gt;的结果：&lt;/p&gt;
+&lt;h3 id=&quot;JPEG&quot;&gt;&lt;a href=&quot;#JPEG&quot; class=&quot;headerlink&quot; title=&quot;JPEG&quot;&gt;&lt;/a&gt;JPEG&lt;/h3&gt;&lt;p&gt;加载，缩放和显示来自&lt;a href=&quot;http://visibleearth.nasa.gov/view.php?id=78314&quot;&gt;美国宇航局 Visible Earth&lt;/a&gt; 的大尺寸高分辨率（12000 ⨉ 12000 px 20 MB JPEG）源图像在 1/10 的大小：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&quot;text-align:center&quot;&gt;Operation&lt;/th&gt;
+&lt;th style=&quot;text-align:center&quot;&gt;Time (sec)&lt;/th&gt;
+&lt;th style=&quot;text-align:center&quot;&gt;σ&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;UIKit&lt;/td&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;0.612&lt;/td&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;14%&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;Core Graphics&lt;sup&gt;1&lt;/sup&gt;&lt;/td&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;0.266&lt;/td&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;3%&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;Image I/O&lt;/td&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;0.255&lt;/td&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;2%&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;Core Image&lt;sup&gt;2&lt;/sup&gt;&lt;/td&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;3.703&lt;/td&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;33%&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;vImage&lt;sup&gt;3&lt;/sup&gt;&lt;/td&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;–&lt;/td&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;–&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&quot;PNG&quot;&gt;&lt;a href=&quot;#PNG&quot; class=&quot;headerlink&quot; title=&quot;PNG&quot;&gt;&lt;/a&gt;PNG&lt;/h3&gt;&lt;p&gt;加载、缩放和显示一个相当大的（1024 ⨉ 1024 px 1MB PNG）渲染的 &lt;a href=&quot;http://postgresapp.com/&quot;&gt;Postgres.app&lt;/a&gt; 图标在 1/10 的大小：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&quot;text-align:center&quot;&gt;Operation&lt;/th&gt;
+&lt;th style=&quot;text-align:center&quot;&gt;Time (sec)&lt;/th&gt;
+&lt;th style=&quot;text-align:center&quot;&gt;σ&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;UIKit&lt;/td&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;0.044&lt;/td&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;30%&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;Core Graphics&lt;sup&gt;4&lt;/sup&gt;&lt;/td&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;0.036&lt;/td&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;10%&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;Image I/O&lt;/td&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;0.038&lt;/td&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;11%&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;Core Image&lt;sup&gt;5&lt;/sup&gt;&lt;/td&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;0.053&lt;/td&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;68%&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;vImage&lt;/td&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;0.050&lt;/td&gt;
+&lt;td style=&quot;text-align:center&quot;&gt;25%&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;sup&gt;1&lt;/sup&gt;, &lt;sup&gt;4&lt;/sup&gt; 结果在不同的 &lt;code&gt;CGInterpolationQuality&lt;/code&gt; 值上是一致的，在性能基准上差异可以忽略不计。&lt;/p&gt;
+&lt;p&gt;&lt;sup&gt;3&lt;/sup&gt; 美国宇航局 Visible Earth 图像的大小大于设备一次能够处理的大小。&lt;/p&gt;
+&lt;p&gt;&lt;sup&gt;2&lt;/sup&gt;, &lt;sup&gt;5&lt;/sup&gt; 在 &lt;code&gt;CIContext&lt;/code&gt; 创建时所传的选项中设置 &lt;code&gt;kCIContextUseSoftwareRenderer&lt;/code&gt; 为 true 会产生比基础结果慢一个数量级的结果。&lt;/p&gt;
+&lt;h2 id=&quot;结论&quot;&gt;&lt;a href=&quot;#结论&quot; class=&quot;headerlink&quot; title=&quot;结论&quot;&gt;&lt;/a&gt;结论&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;UIKit&lt;/strong&gt;，&lt;strong&gt;Core Graphics&lt;/strong&gt;，和 &lt;strong&gt;Image I/O&lt;/strong&gt; 在大多数图像上都可以很好地进行缩放操作。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Core Image&lt;/strong&gt; 在图像缩放操作方面表现优异。实际上，&lt;a href=&quot;https://developer.apple.com/library/mac/documentation/graphicsimaging/Conceptual/CoreImaging/ci_performance/ci_performance.html#//apple_ref/doc/uid/TP30001185-CH10-SW1&quot;&gt;Core Image 编程指南的性能最佳实践章节&lt;/a&gt;特别推荐使用 Core Graphics 或者 Image I/O 函数预先裁剪或者降低采样图像。&lt;/li&gt;
+&lt;li&gt;对于一般的没有任何额外功能的图像缩放，&lt;strong&gt;UIGraphicsBeginImageContextWithOptions&lt;/strong&gt; 可能是最好的选择。&lt;/li&gt;
+&lt;li&gt;如果需要考虑图像质量，考虑使用 &lt;strong&gt;CGBitmapContextCreate&lt;/strong&gt; 结合 &lt;strong&gt;CGContextSetInterpolationQuality&lt;/strong&gt;。&lt;/li&gt;
+&lt;li&gt;当缩放图像的目的是显示缩略图时，&lt;strong&gt;CGImageSourceCreateThumbnailAtIndex&lt;/strong&gt; 为渲染和缓存提供了一个引人注目的解决方案。&lt;/li&gt;
+&lt;li&gt;除非你已经在使用 &lt;strong&gt;vImage&lt;/strong&gt;，否则使用低级 Accelerate 框架进行大小调整的额外工作并不值得。&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;原文：&lt;a href=&quot;http://nshipster.com/image-resizing/&quot;&gt;Image Resizing Techniques&lt;/a&gt;&lt;br&gt;作者：&lt;a href=&quot;http://nshipster.com/authors/
+    
+    </summary>
+    
+    
+      <category term="iOS" scheme="http://yangcaimu.github.io/tags/iOS/"/>
+    
+      <category term="翻译" scheme="http://yangcaimu.github.io/tags/%E7%BF%BB%E8%AF%91/"/>
+    
+  </entry>
+  
+  <entry>
     <title>读 SDWebImage 源码小记</title>
     <link href="http://yangcaimu.github.io/2017/10/22/%E8%AF%BB-SDWebImage-%E6%BA%90%E7%A0%81%E5%B0%8F%E8%AE%B0/"/>
     <id>http://yangcaimu.github.io/2017/10/22/读-SDWebImage-源码小记/</id>
     <published>2017-10-22T09:42:52.000Z</published>
-    <updated>2017-10-31T02:49:39.000Z</updated>
+    <updated>2017-12-03T16:11:51.000Z</updated>
     
     <content type="html">&lt;p&gt;Version: 4.2.0&lt;/p&gt;
 &lt;h2 id=&quot;流程&quot;&gt;&lt;a href=&quot;#流程&quot; class=&quot;headerlink&quot; title=&quot;流程&quot;&gt;&lt;/a&gt;流程&lt;/h2&gt;&lt;p&gt;&lt;img src=&quot;/images/2017-10-22-读-SDWebImage-源码小记-SDWebImageSequenceDiagram.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
@@ -138,7 +284,7 @@
     <link href="http://yangcaimu.github.io/2016/12/05/%E6%B7%BB%E5%8A%A0%E7%BA%A6%E6%9D%9F%E7%9A%84%E6%81%B0%E5%BD%93%E6%97%B6%E6%9C%BA/"/>
     <id>http://yangcaimu.github.io/2016/12/05/添加约束的恰当时机/</id>
     <published>2016-12-04T16:07:30.000Z</published>
-    <updated>2016-12-04T16:16:29.000Z</updated>
+    <updated>2017-12-03T16:11:48.000Z</updated>
     
     <content type="html">&lt;p&gt;总的来说，在 iOS 开发中添加约束有 2 种方式，通过 Interface Builder 的界面拖拽添加，或者手写代码添加。&lt;/p&gt;
 &lt;h3 id=&quot;Interface-Builder-实现&quot;&gt;&lt;a href=&quot;#Interface-Builder-实现&quot; class=&quot;headerlink&quot; title=&quot;Interface Builder 实现&quot;&gt;&lt;/a&gt;Interface Builder 实现&lt;/h3&gt;&lt;p&gt;在 Interface Builder 下只能通过界面添加，所以无需考虑添加的时机。&lt;/p&gt;
@@ -184,7 +330,7 @@
     <link href="http://yangcaimu.github.io/2016/07/12/%E5%86%99%E4%BD%9C%E6%9C%AC%E8%BA%AB%E7%9A%84%E4%B8%80%E4%BA%9B%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/"/>
     <id>http://yangcaimu.github.io/2016/07/12/写作本身的一些参考资料/</id>
     <published>2016-07-12T10:11:22.000Z</published>
-    <updated>2016-07-12T10:16:53.000Z</updated>
+    <updated>2017-12-03T16:11:45.000Z</updated>
     
     <content type="html">&lt;blockquote&gt;
 &lt;p&gt;好的排版能让人眼前一亮，赏心悦目。&lt;/p&gt;
@@ -218,7 +364,7 @@
     <link href="http://yangcaimu.github.io/2016/06/09/Alfred-workflow-%E5%BF%AB%E9%80%9F%E6%89%93%E5%BC%80-Xcode-%E5%B7%A5%E7%A8%8B/"/>
     <id>http://yangcaimu.github.io/2016/06/09/Alfred-workflow-快速打开-Xcode-工程/</id>
     <published>2016-06-09T15:09:02.000Z</published>
-    <updated>2016-07-12T10:37:08.000Z</updated>
+    <updated>2017-12-03T16:11:42.000Z</updated>
     
     <content type="html">&lt;h3 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot; title=&quot;背景&quot;&gt;&lt;/a&gt;背景&lt;/h3&gt;&lt;p&gt;作为一个 iOS 开发者，常常需要打开 Xcode 工程项目，一般情况下都是&lt;/p&gt;
 &lt;blockquote&gt;
@@ -298,7 +444,7 @@
     <link href="http://yangcaimu.github.io/2014/05/25/windowshiyongjiqiao/"/>
     <id>http://yangcaimu.github.io/2014/05/25/windowshiyongjiqiao/</id>
     <published>2014-05-25T15:07:16.000Z</published>
-    <updated>2016-06-24T06:05:26.000Z</updated>
+    <updated>2017-12-03T16:11:39.000Z</updated>
     
     <content type="html">&lt;p&gt;介于正式使用 RMBP，以后应该没多少机会使用 Windows，在此记录下之前使用 Window 的一些心得，还有纪念下陪伴我大学生活的 Acer 4752G 本本。&lt;/p&gt;
 &lt;p&gt;记得在大一暑假的某一天，冥冥之中闲逛到 X-Force 的 &lt;a href=&quot;http://www.iplaysoft.com/&quot;&gt;异次元软件世界&lt;/a&gt;，在 “本年热门” Tag 看到一篇文章 &lt;a href=&quot;http://www.iplaysoft.com/build-effective-working-environment-1.html&quot;&gt;《让电脑更高效的魔法 - 浅谈高效率PC工作环境的简化、净化与建立方法 (上)》&lt;/a&gt;、&lt;a href=&quot;http://www.iplaysoft.com/build-effective-working-environment-2.html&quot;&gt;《让电脑更高效的魔法 – 浅谈高效率PC工作环境的简化、净化与建立方法 (下)》&lt;/a&gt;，于是乎无聊没事做，就去效仿了下。&lt;/p&gt;
@@ -396,7 +542,7 @@
     <link href="http://yangcaimu.github.io/2014/05/24/macshiyongjiqiao/"/>
     <id>http://yangcaimu.github.io/2014/05/24/macshiyongjiqiao/</id>
     <published>2014-05-24T06:44:51.000Z</published>
-    <updated>2016-06-24T06:03:12.000Z</updated>
+    <updated>2017-12-03T16:11:35.000Z</updated>
     
     <content type="html">&lt;p&gt;通过使用 Mac 提高生产效率，不止是在工作上，在日常生活上也有必要提高效率，本文先从快捷键、触摸板、工具、小技巧几点切入。&lt;/p&gt;
 &lt;h2 id=&quot;Shortcuts&quot;&gt;&lt;a href=&quot;#Shortcuts&quot; class=&quot;headerlink&quot; title=&quot;Shortcuts&quot;&gt;&lt;/a&gt;Shortcuts&lt;/h2&gt;&lt;h3 id=&quot;官方手册&quot;&gt;&lt;a href=&quot;#官方手册&quot; class=&quot;headerlink&quot; title=&quot;官方手册&quot;&gt;&lt;/a&gt;官方手册&lt;/h3&gt;&lt;ul&gt;
@@ -581,7 +727,7 @@
     <link href="http://yangcaimu.github.io/2014/04/25/dajianblogzhilu/"/>
     <id>http://yangcaimu.github.io/2014/04/25/dajianblogzhilu/</id>
     <published>2014-04-25T05:38:00.000Z</published>
-    <updated>2016-06-24T06:03:50.000Z</updated>
+    <updated>2017-12-03T16:11:32.000Z</updated>
     
     <content type="html">&lt;blockquote&gt;
 &lt;p&gt;更新: 2016.05.14 - 博客已从 Octopress 迁移至 Hexo&lt;/p&gt;
