@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yangcaimu.github.io/"/>
-  <updated>2017-12-03T16:24:11.000Z</updated>
+  <updated>2017-12-04T11:44:41.000Z</updated>
   <id>http://yangcaimu.github.io/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://yangcaimu.github.io/2017/12/04/Image-Resizing-Techniques/"/>
     <id>http://yangcaimu.github.io/2017/12/04/Image-Resizing-Techniques/</id>
     <published>2017-12-03T16:01:00.000Z</published>
-    <updated>2017-12-03T16:24:11.000Z</updated>
+    <updated>2017-12-04T11:44:41.000Z</updated>
     
     <content type="html">&lt;blockquote&gt;
 &lt;p&gt;原文：&lt;a href=&quot;http://nshipster.com/image-resizing/&quot;&gt;Image Resizing Techniques&lt;/a&gt;&lt;br&gt;作者：&lt;a href=&quot;http://nshipster.com/authors/mattt-thompson/&quot;&gt;Mattt Thompson&lt;/a&gt;&lt;/p&gt;
@@ -139,7 +139,7 @@
 &lt;p&gt;&lt;sup&gt;2&lt;/sup&gt;, &lt;sup&gt;5&lt;/sup&gt; 在 &lt;code&gt;CIContext&lt;/code&gt; 创建时所传的选项中设置 &lt;code&gt;kCIContextUseSoftwareRenderer&lt;/code&gt; 为 true 会产生比基础结果慢一个数量级的结果。&lt;/p&gt;
 &lt;h2 id=&quot;结论&quot;&gt;&lt;a href=&quot;#结论&quot; class=&quot;headerlink&quot; title=&quot;结论&quot;&gt;&lt;/a&gt;结论&lt;/h2&gt;&lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;UIKit&lt;/strong&gt;，&lt;strong&gt;Core Graphics&lt;/strong&gt;，和 &lt;strong&gt;Image I/O&lt;/strong&gt; 在大多数图像上都可以很好地进行缩放操作。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Core Image&lt;/strong&gt; 在图像缩放操作方面表现优异。实际上，&lt;a href=&quot;https://developer.apple.com/library/mac/documentation/graphicsimaging/Conceptual/CoreImaging/ci_performance/ci_performance.html#//apple_ref/doc/uid/TP30001185-CH10-SW1&quot;&gt;Core Image 编程指南的性能最佳实践章节&lt;/a&gt;特别推荐使用 Core Graphics 或者 Image I/O 函数预先裁剪或者降低采样图像。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Core Image&lt;/strong&gt; 的表现优于图像缩放操作。实际上，&lt;a href=&quot;https://developer.apple.com/library/mac/documentation/graphicsimaging/Conceptual/CoreImaging/ci_performance/ci_performance.html#//apple_ref/doc/uid/TP30001185-CH10-SW1&quot;&gt;Core Image 编程指南的性能最佳实践章节&lt;/a&gt;特别推荐使用 Core Graphics 或者 Image I/O 函数预先裁剪或者降低采样图像。&lt;/li&gt;
 &lt;li&gt;对于一般的没有任何额外功能的图像缩放，&lt;strong&gt;UIGraphicsBeginImageContextWithOptions&lt;/strong&gt; 可能是最好的选择。&lt;/li&gt;
 &lt;li&gt;如果需要考虑图像质量，考虑使用 &lt;strong&gt;CGBitmapContextCreate&lt;/strong&gt; 结合 &lt;strong&gt;CGContextSetInterpolationQuality&lt;/strong&gt;。&lt;/li&gt;
 &lt;li&gt;当缩放图像的目的是显示缩略图时，&lt;strong&gt;CGImageSourceCreateThumbnailAtIndex&lt;/strong&gt; 为渲染和缓存提供了一个引人注目的解决方案。&lt;/li&gt;
@@ -429,13 +429,13 @@
     </summary>
     
     
-      <category term="Mac" scheme="http://yangcaimu.github.io/tags/Mac/"/>
-    
       <category term="Alfred" scheme="http://yangcaimu.github.io/tags/Alfred/"/>
     
       <category term="Workflow" scheme="http://yangcaimu.github.io/tags/Workflow/"/>
     
       <category term="Xcode" scheme="http://yangcaimu.github.io/tags/Xcode/"/>
+    
+      <category term="Mac" scheme="http://yangcaimu.github.io/tags/Mac/"/>
     
   </entry>
   
